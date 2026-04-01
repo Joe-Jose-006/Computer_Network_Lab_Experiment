@@ -1,0 +1,8 @@
+sudo apt install hping3 -y
+hping3 --version
+sudo hping3 -S 93.184.216.34 -p 80 -c 25
+sudo hping3 -R 93.184.216.34 -p 80 -c 20
+sudo hping3 93.184.216.34 -p 80 -d 120 -c 25
+sudo hping3 -S 93.184.216.34 -p 80 -M 1000 -L 2000 -c 15
+sudo hping3 -F -A 93.184.216.34 -p 80 -c 20
+sudo hping3 -S 93.184.216.34 -a 1.2.3.4 -c 15
