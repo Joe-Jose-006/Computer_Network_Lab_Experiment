@@ -1,0 +1,73 @@
+clear;
+clc;
+
+disp("================= HYBRID TOPOLOGY GENERATION =================");
+
+HybridName = "Hybrid Topology";
+
+// TREE TOPOLOGY
+Tree_N = 7;
+Tree_tail = [1 1 2 2 3 3];
+Tree_head = [2 3 4 5 6 7];
+Tree_x = [500 300 700 200 400 600 800];
+Tree_y = [950 800 800 700 700 700 700];
+
+// BUS TOPOLOGY
+Bus_N = 15;
+Bus_tail = [1 2 3 4 5 6 7 1 2 3 4 5 6 7];
+Bus_head = [2 3 4 5 6 7 8 9 10 11 12 13 14 15];
+Bus_x = [100 100 100 100 100 100 100 100 200 300 400 500 600 300 300];
+Bus_y = [300 400 500 600 700 800 900 950 300 400 500 600 700 800 900];
+
+Bus_tail = Bus_tail + Tree_N;
+Bus_head = Bus_head + Tree_N;
+
+// STAR TOPOLOGY
+Star_N = 9;
+Star_tail = [1 1 1 1 1 1 1 1];
+Star_head = [2 3 4 5 6 7 8 9];
+Star_x = [500 500 500 200 200 200 800 800 800];
+Star_y = [500 200 800 800 200 500 200 500 800];
+
+Star_tail = Star_tail + Tree_N + Bus_N;
+Star_head = Star_head + Tree_N + Bus_N;
+
+// COMBINE ALL TOPOLOGIES
+Total_N = Tree_N + Bus_N + Star_N;
+
+All_tail = [Tree_tail Bus_tail Star_tail];
+All_head = [Tree_head Bus_head Star_head];
+All_x = [Tree_x Bus_x Star_x];
+All_y = [Tree_y Bus_y Star_y];
+
+[HybridGraph] = NL_G_MakeGraph(HybridName, Total_N, All_tail, All_head, All_x, All_y);
+
+// DISPLAY GRAPH
+Window = 1;
+NL_G_ShowGraph(HybridGraph, Window);
+xtitle("Hybrid Topology (Tree + Bus + Star)", "X Nodes", "Y Nodes");
+
+// HIGHLIGHT NODES
+HighlightNodes = [1,5,10,20,28];
+NodeColor = 5;
+Border = 10;
+Diameter = 25;
+
+Window = 2;
+NL_G_HighlightNodes(HybridGraph, HighlightNodes, NodeColor, Border, Diameter, Window);
+
+// SHOW NODE & EDGE NUMBERS
+Window = 3;
+NL_G_ShowGraphNE(HybridGraph, Window);
+
+// NETWORK STATISTICS
+[NumNodes, NumEdges] = NL_G_GraphSize(HybridGraph);
+
+disp("Total Nodes: "+string(NumNodes));
+disp("Total Edges: "+string(NumEdges));
+
+// EDGE LENGTH
+[Len] = NL_G_EdgesLength(HybridGraph.node_x, HybridGraph.node_y, HybridGraph.head, HybridGraph.tail);
+
+disp("Edge Lengths:");
+disp(Len);
