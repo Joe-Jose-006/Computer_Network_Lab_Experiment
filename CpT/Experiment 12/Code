@@ -1,0 +1,48 @@
+RIP Configuration
+Router R1
+enable
+conf t
+router rip
+version 2
+no auto-summary
+network 192.168.1.0
+network 10.0.0.0
+Router R2
+enable
+conf t
+router rip
+version 2
+no auto-summary
+network 10.0.0.0
+network 20.0.0.0
+network 150.150.150.0
+Router R3
+enable
+conf t
+router rip
+version 2
+no auto-summary
+network 150.150.150.0
+________________________________________
+EIGRP Configuration
+Router R1
+enable
+conf t
+router eigrp 100
+no auto-summary
+network 192.168.1.0
+network 10.0.0.0
+Router R2
+enable
+conf t
+router eigrp 100
+no auto-summary
+network 10.0.0.0
+network 20.0.0.0
+network 150.150.150.0
+Router R3
+enable
+conf t
+router eigrp 100
+no auto-summary
+network 150.150.150.0
