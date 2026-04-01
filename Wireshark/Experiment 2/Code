@@ -1,0 +1,21 @@
+from scapy.all import *
+
+packets = rdpcap("capture.pcap")
+
+print("Number of packets:", len(packets))
+src_ips = set(pkt[IP].src for pkt in packets if IP in pkt)
+print("Number of Source IPs:", len(src_ips))
+dst_ips = set(pkt[IP].dst for pkt in packets if IP in pkt)
+print("Number of Destination IPs:", len(dst_ips))
+protocols = set()
+for pkt in packets:
+    if IP in pkt:
+        protocols.add(pkt[IP].proto)
+
+print("Number of Protocols:", len(protocols))
+from collections import Counter
+
+proto_count = Counter(pkt[IP].proto for pkt in packets if IP in pkt)
+
+for k,v in proto_count.items():
+    print(k, ":", v)
