@@ -1,0 +1,81 @@
+Program 1 – Graph Generation (graphs.py)
+from scapy.all import *
+import matplotlib.pyplot as plt
+
+packets = rdpcap("capture.pcapng")
+
+def plot_packets(packet_list, title, position):
+    plt.subplot(3,2,position)
+    times = [pkt.time for pkt in packet_list]
+    plt.hist(times, bins=50)
+    plt.title(title)
+
+plt.figure(figsize=(10,8))
+
+plot_packets(packets, "All Packets", 1)
+plot_packets([p for p in packets if TCP in p], "TCP Packets", 2)
+plot_packets([p for p in packets if UDP in p], "UDP Packets", 3)
+plot_packets([p for p in packets if p.haslayer(DNS)], "DNS Packets", 4)
+plot_packets([p for p in packets if ICMP in p], "ICMP Packets", 5)
+
+plt.tight_layout()
+plt.show()
+________________________________________
+Program 2 – Protocol Analysis (protocol.py)
+from scapy.all import *
+
+packets = rdpcap("capture.pcapng")
+
+total_packets = len(packets)
+total_size = sum(len(pkt) for pkt in packets)
+
+header_size = 0
+
+for pkt in packets:
+    if IP in pkt:
+        header_size += pkt[IP].ihl * 4
+
+data_size = total_size - header_size
+
+print("Total number of packets:", total_packets)
+print("Total size of data:", data_size, "bytes")
+print("Total size of headers:", header_size, "bytes")
+________________________________________
+Program 3 – Conversations Analysis (conversations.py)
+from scapy.all import *
+from collections import defaultdict
+import statistics
+
+packets = rdpcap("capture.pcapng")
+
+flows = defaultdict(list)
+
+max_bytes = 0
+max_pair = None
+
+for pkt in packets:
+    if IP in pkt:
+        key = (pkt[IP].src, pkt[IP].dst)
+        flows[key].append(pkt)
+
+for key, pkts in flows.items():
+    total_bytes = sum(len(pkt) for pkt in pkts)
+    total_packets = len(pkts)
+
+    times = sorted([pkt.time for pkt in pkts])
+    inter = [times[i+1] - times[i] for i in range(len(times)-1)]
+
+    avg = statistics.mean(inter) if inter else 0
+
+    if total_bytes > max_bytes:
+        max_bytes = total_bytes
+        max_pair = key
+
+    print("Address Pair:", key)
+    print("Total Bytes:", total_bytes)
+    print("Total Packets:", total_packets)
+    print("Average Inter Packet Time:", avg)
+    print("--------------------------------")
+
+print("Pair with Maximum Bytes:", max_pair)
+print("Maximum Bytes Transferred:", max_bytes)
