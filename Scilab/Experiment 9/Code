@@ -1,0 +1,166 @@
+Program 1 – Routing Algorithm Performance Comparison
+clc; clear;
+clf();
+
+k = 1;
+
+for n = 5:5:100
+    nodes(k) = n;
+
+    L = 1000;
+    dmax = 100;
+
+    [g] = NL_T_LocalityConnex(n, L, dmax);
+
+    src = NL_F_RandInt1n(length(g.node_x));
+
+    // Bellman-Ford timing
+    for i = 1:20
+        timer();
+        [dist1, pred1] = NL_R_BellmanFord(g, src);
+        T1(i) = timer();
+    end
+
+    bellman_time(k) = mean(T1);
+
+    // Dijkstra timing
+    for i = 1:20
+        timer();
+        [dist2, pred2] = NL_R_Dijkstra(g, src);
+        T2(i) = timer();
+    end
+
+    dijkstra_time(k) = mean(T2);
+
+    k = k + 1;
+end
+
+clf();
+plot(nodes, bellman_time, '-ro');
+plot(nodes, dijkstra_time, '-b*');
+
+legend("Bellman-Ford", "Dijkstra");
+
+xtitle("Routing Time Comparison");
+xlabel("Number of Nodes");
+ylabel("Time (seconds)");
+
+xgrid();
+________________________________________
+Program 2 – Congestion Simulation (200 vs 300 Nodes)
+clc; clear;
+clf();
+
+L = 1000;
+dmax = 100;
+
+sizes = [200 300];
+
+for k = 1:length(sizes)
+
+    n = sizes(k);
+
+    [g] = NL_T_LocalityConnex(n, L, dmax);
+
+    src = NL_F_RandInt1n(length(g.node_x));
+
+    timer();
+
+    for i = 1:10
+        [dist, pred] = NL_R_BellmanFord(g, src);
+    end
+
+    time_partA(k) = timer();
+
+end
+
+clf();
+plot(sizes, time_partA, '-ro');
+
+xtitle("Congestion Simulation (200 vs 300)");
+xlabel("Number of Nodes");
+ylabel("Time (seconds)");
+
+xgrid();
+________________________________________
+Program 3 – Congestion Analysis with Different Network Densities
+clc; clear;
+clf();
+
+L = 1000;
+
+sizes = [300 200 100];
+
+// Low density
+for k = 1:length(sizes)
+
+    n = sizes(k);
+    dmax = 50;
+
+    [g] = NL_T_LocalityConnex(n, L, dmax);
+
+    src = NL_F_RandInt1n(length(g.node_x));
+
+    timer();
+
+    for i = 1:2
+        [dist, pred] = NL_R_BellmanFord(g, src);
+    end
+
+    time_low(k) = timer();
+
+end
+
+// Medium density
+for k = 1:length(sizes)
+
+    n = sizes(k);
+    dmax = 100;
+
+    [g] = NL_T_LocalityConnex(n, L, dmax);
+
+    src = NL_F_RandInt1n(length(g.node_x));
+
+    timer();
+
+    for i = 1:2
+        [dist, pred] = NL_R_BellmanFord(g, src);
+    end
+
+    time_medium(k) = timer();
+
+end
+
+// High density
+for k = 1:length(sizes)
+
+    n = sizes(k);
+    dmax = 200;
+
+    [g] = NL_T_LocalityConnex(n, L, dmax);
+
+    src = NL_F_RandInt1n(length(g.node_x));
+
+    timer();
+
+    for i = 1:2
+        [dist, pred] = NL_R_BellmanFord(g, src);
+    end
+
+    time_high(k) = timer();
+
+end
+
+clf();
+
+plot(sizes, time_low, '-ro');
+plot(sizes, time_medium, '-b*');
+plot(sizes, time_high, '-g^');
+
+legend("Low Density","Medium Density","High Density");
+
+xtitle("Congestion Simulation Comparison");
+xlabel("Number of Nodes");
+ylabel("Time (seconds)");
+
+xgrid()
